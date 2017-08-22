@@ -1,0 +1,162 @@
+﻿@model List<Web.Models.Image>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Calculator";
+    string message = "No number.";
+    double result;
+    string first = "0";
+    string second = "0";
+    int right = 0;
+    int left = 0;
+    string firstmessage = "NOT POSTED";
+    string num1, op, num2;
+    num1 = "";
+    op = "";
+    num2 = "";
+    if (IsPost) {
+        message = "";
+        firstmessage = "Operation: ";
+        num1 = Request["firstNumber"];
+        op = Request["operation"];
+        num2 = Request["secondNumber"];
+        bool error = false;
+        double x1=0, x2=0;
+        if (num1.Contains('.'))
+        {
+            first = num1.Substring(0, num1.IndexOf('.'));
+            second = num1.Substring(num1.IndexOf('.') + 1, num1.Length - first.ToString().Length - 1);
+            if (first.All(char.IsDigit) && second.All(char.IsDigit)) {
+                left = first.AsInt();
+                right = second.AsInt();
+                x1 = left + Convert.ToDouble(right) / (Math.Pow(10, right.ToString().Length));
+            }
+            else
+            {
+                error = true;
+                message += num1 + " is not a number. ";
+            }
+        }
+        else
+        {
+            if (num1.All(char.IsDigit))
+            {
+                x1 = Convert.ToDouble(num1.AsInt());
+            }
+            else
+            {
+                error = true;
+                message += num1 + " is not a number. ";
+            }
+        }
+        if (num2.Contains('.'))
+        {
+            first = num2.Substring(0, num2.IndexOf('.'));
+            second = num2.Substring(num2.IndexOf('.') + 1, num2.Length - first.ToString().Length - 1);
+            if (first.All(char.IsDigit) && second.All(char.IsDigit))
+            {
+                left = first.AsInt();
+                right = second.AsInt();
+                x2 = left + Convert.ToDouble(right) / (Math.Pow(10, right.ToString().Length));
+            }
+            else
+            {
+                error = true;
+                message += num2 + " is not a number. ";
+            }
+        }
+        else
+        {
+            if (num2.All(char.IsDigit))
+            {
+                x2 = Convert.ToDouble(num2.AsInt());
+            }
+            else
+            {
+                error = true;
+                message += num2 + " is not a number. ";
+            }
+        }
+        if (op.Equals("+"))
+        {
+            result = x1 + x2;
+
+        } else if (op.Equals("-"))
+        {
+            result = x1 - x2;
+
+        } else if (op.Equals("*"))
+        {
+            result = x1 * x2;
+
+        } else if (op.Equals("/"))
+        {
+            result = x1 / x2;
+        } else if (op.Equals("%"))
+        {
+            result = x1 % x2;
+        } else if (op.Equals("√"))
+        {
+            result = Math.Pow(x2,1.0/x1);
+        }
+        else
+        {
+            message += op + " is not an operator. ";
+            error = true;
+            result = 0;
+        }
+        if ((result * 10) % 10 == 0)
+        {
+            result = result.ToString().AsInt();
+        }
+        if (!error)
+        {
+            message = "Result is " + result + ".";
+        }
+        else
+        {
+            message = "ERROR !!! " + message;
+        }
+    }
+}
+
+<p>@firstmessage @num1 @op  @num2</p>
+<form action="" method="post">
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <input type="text" name="firstNumber" />
+                </td>
+                <td>
+                    <input type="text" name="operation" />
+                </td>
+                <td>
+                    <input type="text" name="secondNumber" />
+                </td>
+                <td>
+                    <button type="submit" value="Submit">Calculate</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</form>
+<p>@message</p>
+<p>Month is @DateTime.Now.Month</p>
+<p id="int_var"></p>
+<table border="1">
+    <tr>
+        <td>Requested URL</td>
+        <td>Relative Path</td>
+        <td>Full Path</td>
+        <td>HTTP Request Type</td>
+    </tr>
+    <tr>
+        <td>@Request.Url</td>
+        <td>@Request.FilePath</td>
+        <td>@Request.MapPath(Request.FilePath)</td>
+        <td>@Request.RequestType</td>
+    </tr>
+</table>
+@Html.Partial("_PartialHeader", "akif")
